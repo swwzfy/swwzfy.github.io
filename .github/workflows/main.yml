@@ -1,55 +1,53 @@
-# 将静态内容部署到 GitHub Pages 的简易工作流程
-name: Deploy static content to Pages
+# workflow 名称，可以自定义
+name: Deploy GitHub Pages
 
+# 触发条件：在代码 push 到 master 分支后，自动执行该 workflow
 on:
-  # 仅在推送到默认分支时运行。
   push:
-    branches: ["main"]
+    branches:
+      - master
 
-  # 这个选项可以使你手动在 Action tab 页面触发工作流
-  workflow_dispatch:
-
-# 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages。
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# 允许一个并发的部署
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
+# 任务
 jobs:
-  # 单次部署的工作描述
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: 设置node环境
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-      - name: 设置pnpm环境
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          token: ${{ secrets.sww_token }}
-      - name: 安装依赖
-        run: pnpm install
-      - name: Build
-        run: pnpm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload dist folder
-          path: "./dist"
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+  build-and-deploy:
+  # 服务器环境：最新版 Ubuntu，也可以自定义版本
+  runs-on: ubuntu-latest
+  steps:
+  # 拉取代码
+  - name: Checkout
+    uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+  # 设置 Node.js 版本
+  - name: Setup Node.js environment
+    uses: actions/setup-node@v1
+    with:
+      node-version: "14.18.0"
+  # 缓存 node_modules
+  - name: Cache dependencies
+    uses: actions/cache@v2
+    id: yarn-cache
+    with:
+      path: |
+        **/node_modules
+      key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      restore-keys: |
+        ${{ runner.os }}-yarn-
+
+  # 如果缓存没有命中，安装依赖
+  - name: Install dependencies
+    if: steps.yarn-cache.outputs.cache-hit != 'true'
+    run: yarn --frozen-lockfile
+
+  # 生成静态文件
+  - name: Build
+    run: npm run build
+
+  # 部署到 GitHub Pages
+  - name: Deploy
+    uses: crazy-max/ghaction-github-pages@v2
+    env:
+    GITHUB_TOKEN: ${{ secrets.sww_token }} # ACCESS_TOKEN 是创建的 Secret 名称，替换为你自己创建的名称
+    with:
+      target-branch: gh-pages # 部署到 gh-pages 分支，master 分支存放的是项目源码，而 gh-pages 分支则用来存放生成的静态文件
+      build_dir: docs/.vuepress/dist # vuepress 生成的静态文件存放的地方
