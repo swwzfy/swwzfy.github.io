@@ -38,6 +38,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 9
+          token: ${{ secrets.sww_token }}
       - name: 安装依赖
         run: pnpm install
       - name: Build
