@@ -4,6 +4,8 @@
 config.env
 # 忽略整个目录
 node_modules/
+# 忽略dist
+dist/
 # 忽略所有 .pdf 文件，除了 readme.pdf
 *.pdf
 !readme.pd
