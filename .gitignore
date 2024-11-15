@@ -10,3 +10,4 @@ dist/
 *.pdf
 !readme.pd
 !.gitignore
+/.idea/inspectionProfiles/Project_Default.xml

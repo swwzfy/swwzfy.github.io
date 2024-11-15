@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <span>测试自动化</span>
+    <el-button>Default</el-button>
     <h1>This is an about page</h1>
   </div>
 </template>
