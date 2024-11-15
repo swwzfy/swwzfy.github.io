@@ -1267,6 +1267,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/vue@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmmirror.com/@types/vue/-/vue-2.0.0.tgz"
+  integrity sha512-WDElkBv/o4lVwu6wYHB06AXs4Xo2fwDjJUpvPRc1QQdzkUSiGFjrYuSCy8raxLE5FObgKq8ND7R5gSZTFLK60w==
+  dependencies:
+    vue "*"
+
 "@types/webpack-env@^1.15.2":
   version "1.18.5"
   resolved "https://registry.npmmirror.com/@types/webpack-env/-/webpack-env-1.18.5.tgz"
